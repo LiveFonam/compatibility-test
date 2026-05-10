@@ -1,0 +1,550 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+  <title>Love Compatibility</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@400;700&family=Great+Vibes&family=Poppins:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+  <style>
+    :root {
+      --bg:         #0c0c0c;
+      --surface:    #161616;
+      --border:     #2a2a2a;
+      --border-hi:  #444;
+      --accent:     #d4003a;
+      --accent-hi:  #ff0044;
+      --text:       #f0f0f0;
+      --text-muted: #666;
+      --text-dim:   #999;
+    }
+
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html, body {
+      width: 100%;
+      height: 100%;
+      background: radial-gradient(ellipse at 50% 35%, #2e001a 0%, #170010 45%, #0c0c0c 80%);
+      color: var(--text);
+      font-family: 'Poppins', sans-serif;
+      overflow: hidden;
+      -webkit-text-size-adjust: 100%;
+    }
+
+    /* ── Floating hearts ── */
+    #bg-hearts {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 0;
+      overflow: hidden;
+    }
+    .fh {
+      position: absolute;
+      bottom: -8%;
+      animation: floatUp linear infinite;
+      pointer-events: none;
+      user-select: none;
+    }
+    @keyframes floatUp {
+      0%   { transform: translateY(0) translateX(0px); opacity: 0; }
+      8%   { opacity: 1; }
+      90%  { opacity: 0.85; }
+      100% { transform: translateY(-115vh) translateX(18px); opacity: 0; }
+    }
+
+    /* ── Screens ── */
+    section {
+      position: fixed;
+      inset: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      pointer-events: none;
+      z-index: 1;
+      padding: 24px 20px;
+    }
+    section.active {
+      opacity: 1;
+      pointer-events: all;
+    }
+
+    /* ─────────────────────────────────────
+       SCREEN 1 — MATCHMAKER
+    ───────────────────────────────────── */
+    .brand {
+      text-align: center;
+      margin-bottom: 28px;
+    }
+    .brand-icon {
+      display: block;
+      font-size: clamp(1.4rem, 4.5vw, 1.8rem);
+      color: #ff85a1;
+      margin-bottom: 8px;
+      letter-spacing: 0.2em;
+      text-shadow: 0 0 14px rgba(255,45,120,0.6);
+    }
+    @keyframes titleBeat {
+      0%, 100% { transform: scale(1); }
+      50%       { transform: scale(1.045); }
+    }
+
+    .brand-title {
+      font-family: 'Great Vibes', cursive;
+      font-size: clamp(3.4rem, 12vw, 6rem);
+      font-weight: 400;
+      color: #ffb3c8;
+      line-height: 1.15;
+      -webkit-text-stroke: 0.5px #ffb3c8;
+      animation: titleBeat 1.5s ease-in-out infinite;
+      position: relative;
+      will-change: transform;
+      text-shadow:
+        0 0 8px #fff, 0 0 20px #ff2d78,
+        0 0 55px #ff2d78, 0 0 100px rgba(255,45,120,0.4);
+    }
+    #title-sparkles {
+      position: absolute;
+      inset: -30px -50px;
+      pointer-events: none;
+    }
+    .spark {
+      position: absolute;
+      font-style: normal;
+      line-height: 1;
+      pointer-events: none;
+      user-select: none;
+    }
+
+    .card {
+      width: 100%;
+      max-width: 420px;
+      background: rgba(18, 18, 18, 0.92);
+      border: 1px solid var(--border);
+      padding: clamp(24px, 5vw, 36px) clamp(20px, 5vw, 32px);
+    }
+
+    .card-label {
+      font-size: 0.75rem;
+      font-weight: 600;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      margin-bottom: 14px;
+    }
+
+    .input-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 16px;
+    }
+    .input-row input {
+      flex: 1;
+      min-width: 0;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      padding: 11px 13px;
+      color: var(--text);
+      font-family: 'Poppins', sans-serif;
+      font-size: 16px; /* 16px minimum prevents iOS zoom */
+      font-weight: 400;
+      outline: none;
+      transition: border-color 0.15s;
+      border-radius: 0;
+      -webkit-appearance: none;
+    }
+    .input-row input::placeholder {
+      color: var(--text-muted);
+      font-weight: 300;
+    }
+    .input-row input:focus {
+      border-color: var(--border);
+      outline: none;
+    }
+    .input-row input[readonly] {
+      color: var(--text-dim);
+      cursor: default;
+    }
+    .divider-sym {
+      flex-shrink: 0;
+      color: var(--accent);
+      font-size: 1.2rem;
+      line-height: 1;
+    }
+
+    .btn {
+      display: block;
+      width: 100%;
+      padding: 13px 0;
+      background: #ff6fa3;
+      color: #fff;
+      border: none;
+      font-family: 'Poppins', sans-serif;
+      font-size: 0.95rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      cursor: pointer;
+      border-radius: 999px;
+      -webkit-appearance: none;
+      touch-action: manipulation;
+      min-height: 48px;
+      box-shadow:
+        0 0 12px rgba(255, 45, 120, 0.6),
+        0 0 30px rgba(255, 45, 120, 0.35),
+        0 0 55px rgba(255, 45, 120, 0.15);
+      transition: transform 0.15s ease, box-shadow 0.15s ease, background 0.15s ease;
+      will-change: transform;
+    }
+    .btn:hover {
+      background: #ff85b5;
+      transform: scale(0.95);
+      box-shadow:
+        0 0 18px rgba(255, 45, 120, 0.9),
+        0 0 45px rgba(255, 45, 120, 0.6),
+        0 0 80px rgba(255, 45, 120, 0.3);
+    }
+    .btn:active { transform: scale(0.93); }
+
+    #try-own-hint {
+      margin-top: 14px;
+      font-size: 0.78rem;
+      color: var(--text-muted);
+      opacity: 0;
+      transform: translateY(6px);
+      text-align: center;
+    }
+
+    /* ─────────────────────────────────────
+       SCREEN 2 — RESULT
+    ───────────────────────────────────── */
+    #screen-result .card { text-align: left; }
+
+    .result-pair {
+      font-size: clamp(0.78rem, 2.4vw, 0.9rem);
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      margin-bottom: 20px;
+    }
+    .result-pair strong {
+      color: var(--text);
+      font-weight: 600;
+    }
+
+    /* Meter */
+    .meter-track {
+      position: relative;
+      height: 10px;
+      background: var(--border);
+      margin-bottom: 6px;
+      border-radius: 999px;
+    }
+    #meter-fill {
+      height: 100%;
+      width: 0%;
+      background: #ff6fa3;
+      border-radius: 999px;
+    }
+    #meter-heart {
+      position: absolute;
+      top: 50%;
+      left: -8px;
+      transform: translateY(-50%);
+      font-size: 1rem;
+      color: var(--accent);
+      pointer-events: none;
+      line-height: 1;
+    }
+
+    #pct-display {
+      font-family: 'Dancing Script', cursive;
+      font-size: clamp(4.5rem, 20vw, 7.5rem);
+      font-weight: 700;
+      line-height: 1;
+      color: #ffb3c8;
+      letter-spacing: -0.02em;
+      text-shadow:
+        0 0 4px rgba(255,255,255,0.5),
+        0 0 14px #ff2d78,
+        0 0 32px rgba(255,45,120,0.25);
+      margin: 12px 0 8px;
+    }
+
+    #btn-retry {
+      opacity: 0;
+      transform: translateY(8px);
+    }
+
+    /* ─────────────────────────────────────
+       SCREEN 3 — HEART ANIMATION
+    ───────────────────────────────────── */
+    #screen-heart { padding: 0; }
+
+    #heart-canvas {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+    }
+
+    /* Spinning heart */
+    #spin-wrap {
+      position: absolute;
+      inset: 0;
+      display: none;
+      align-items: center;
+      justify-content: center;
+    }
+    #spin-pre {
+      font-family: 'Courier New', monospace;
+      font-size: clamp(6px, 1.9vw, 11px);
+      line-height: 1.18;
+      color: #ff85a1;
+      text-shadow: 0 0 5px #ff2d78, 0 0 14px rgba(255,45,120,0.45);
+      white-space: pre;
+      user-select: none;
+      pointer-events: none;
+    }
+
+    #sherry-label {
+      position: absolute;
+      font-family: 'Dancing Script', cursive;
+      font-size: clamp(1.4rem, 5vw, 2.8rem);
+      color: #ffb3c8;
+      text-shadow: 0 0 10px #ff2d78, 0 0 28px rgba(255,45,120,0.55);
+      bottom: 3%;
+      left: 50%;
+      transform: translateX(-50%);
+      pointer-events: auto;
+      white-space: nowrap;
+      z-index: 20;
+      user-select: none;
+      text-align: center;
+      line-height: 1.2;
+    }
+    #sherry-hint {
+      display: block;
+      font-family: 'Poppins', sans-serif;
+      font-size: clamp(0.5rem, 1.5vw, 0.62rem);
+      font-weight: 400;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: rgba(255,179,200,0.65);
+      text-shadow: none;
+      margin-top: 4px;
+      animation: hintPulse 2.2s ease-in-out infinite;
+    }
+    @keyframes hintPulse {
+      0%, 100% { opacity: 0.35; transform: translateY(0); }
+      50%       { opacity: 0.85; transform: translateY(-3px); }
+    }
+
+    .v-dots {
+      position: absolute;
+      bottom: 24px;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      gap: 8px;
+      z-index: 10;
+    }
+    .dot {
+      width: 9px;
+      height: 9px;
+      background: var(--border-hi);
+      cursor: pointer;
+      transition: background 0.2s, transform 0.2s;
+      border: none;
+    }
+    .dot.active, .dot:hover {
+      background: var(--accent);
+      transform: scale(1.4);
+    }
+
+    #v-label {
+      position: absolute;
+      top: 18px;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 0.7rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.2);
+      pointer-events: none;
+      z-index: 10;
+      white-space: nowrap;
+    }
+
+    /* ── Click-to-spawn heart ── */
+    .chp {
+      position: fixed;
+      pointer-events: none;
+      z-index: 200;
+      transform: translate(-50%, -50%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .chp svg {
+      width: clamp(68px, 18vw, 105px);
+      height: auto;
+      filter: drop-shadow(0 0 14px rgba(255,133,161,0.5));
+    }
+    .chp-label {
+      position: absolute;
+      font-family: 'Dancing Script', cursive;
+      font-size: clamp(0.56rem, 1.8vw, 0.825rem);
+      color: #fff;
+      font-weight: 700;
+      text-shadow: 0 0 6px rgba(255,45,120,0.9);
+      white-space: nowrap;
+      margin-top: -12%;
+    }
+
+    /* ─────────────────────────────────────
+       RESPONSIVE
+    ───────────────────────────────────── */
+    /* ── ECG Heart Monitor ── */
+    #heart-monitor {
+      position: absolute;
+      top: 6px;
+      right: 6px;
+      background: rgba(4, 4, 6, 0.82);
+      border: 1px solid rgba(255, 40, 60, 0.22);
+      padding: 8px 12px 10px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 5px;
+      z-index: 30;
+      backdrop-filter: blur(6px);
+      -webkit-backdrop-filter: blur(6px);
+      min-width: 120px;
+      transform: scale(0.85);
+      transform-origin: top right;
+    }
+    #mon-bpm {
+      display: flex;
+      align-items: baseline;
+      gap: 5px;
+    }
+    #bpm-val {
+      font-family: 'Courier New', monospace;
+      font-size: clamp(1.6rem, 5vw, 2.4rem);
+      font-weight: 700;
+      color: #ff3355;
+      text-shadow: 0 0 10px #ff0033, 0 0 22px rgba(255,0,51,0.4);
+      line-height: 1;
+    }
+    .mon-unit {
+      font-family: 'Poppins', sans-serif;
+      font-size: 0.55rem;
+      font-weight: 600;
+      letter-spacing: 0.18em;
+      color: rgba(255, 51, 85, 0.65);
+      text-transform: uppercase;
+    }
+    #bpm-status {
+      font-family: 'Poppins', sans-serif;
+      font-size: 0.52rem;
+      font-weight: 700;
+      letter-spacing: 0.2em;
+      color: #00e87a;
+      text-transform: uppercase;
+    }
+    #ecg-canvas {
+      display: block;
+      width: 220px;
+      height: 44px;
+      max-width: calc(100vw - 80px);
+    }
+
+    @media (max-width: 400px) {
+      .input-row {
+        flex-direction: column;
+        align-items: stretch;
+      }
+      .divider-sym {
+        text-align: center;
+        align-self: center;
+      }
+    }
+  </style>
+</head>
+<body>
+
+<div id="bg-hearts"></div>
+
+<!-- Screen 1 -->
+<section id="screen-matchmaker" class="active">
+  <div class="brand">
+    <h1 class="brand-title">Love Compatibility<span id="title-sparkles"></span></h1>
+  </div>
+
+  <div class="card">
+    <p class="card-label">Write down two names you want to test</p>
+
+    <div class="input-row">
+      <input type="text" id="name1" value="Adam" autocomplete="off" spellcheck="false">
+      <span class="divider-sym">🩷</span>
+      <input type="text" id="name2" value="Eve" autocomplete="off" spellcheck="false">
+    </div>
+
+    <button class="btn" id="btn-test">Check Compatibility</button>
+
+    <p id="try-own-hint"></p>
+  </div>
+</section>
+
+<!-- Screen 2 -->
+<section id="screen-result">
+  <div class="card">
+    <p class="result-pair">
+      <strong id="rn1">Adam</strong>
+      <span> &amp; </span>
+      <strong id="rn2">Eve</strong>
+    </p>
+
+    <div class="meter-track">
+      <div id="meter-fill"></div>
+      <div id="meter-heart">🫀</div>
+    </div>
+
+    <div id="pct-display">0%</div>
+
+    <button class="btn" id="btn-retry">Try Again</button>
+  </div>
+</section>
+
+<!-- Screen 3 -->
+<section id="screen-heart">
+  <canvas id="heart-canvas"></canvas>
+  <div id="spin-wrap">
+    <pre id="spin-pre"></pre>
+    <p id="sherry-label">Sherry<span id="sherry-hint">drag near heart</span></p>
+    <div id="heart-monitor">
+      <div id="mon-bpm"><span id="bpm-val">62</span><span class="mon-unit">BPM</span></div>
+      <canvas id="ecg-canvas"></canvas>
+      <div id="bpm-status">NORMAL</div>
+    </div>
+  </div>
+  <p id="v-label">Classic</p>
+  <div class="v-dots">
+    <span class="dot active" data-v="0"></span>
+    <span class="dot" data-v="1"></span>
+    <span class="dot" data-v="2"></span>
+  </div>
+</section>
+
+<script src="love.js"></script>
+</body>
+</html>
