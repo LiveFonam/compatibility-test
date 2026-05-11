@@ -174,9 +174,6 @@ function setupMatchmaker() {
     runTest(n1, n2);
   });
   document.getElementById('btn-retry').addEventListener('click', () => {
-    document.getElementById('meter-fill').style.width = '0%';
-    document.getElementById('meter-heart').style.left = '-8px';
-    document.getElementById('pct-display').textContent = '0%';
     const ah = document.getElementById('ascii-heart');
     if (ah) { ah.style.display = 'none'; gsap.killTweensOf(document.getElementById('ascii-art')); }
     gsap.to('#btn-retry', { opacity:0, y:8, duration:0.2 });
@@ -228,6 +225,13 @@ function animateMeter(targetPct) {
   const fill = document.getElementById('meter-fill');
   const heart = document.getElementById('meter-heart');
   const display = document.getElementById('pct-display');
+
+  // Reset here — result screen is fading in, so this is never visible
+  fill.style.width = '0%';
+  heart.style.left = '-8px';
+  display.textContent = '0%';
+  gsap.set('#btn-retry', { opacity: 0, y: 8 });
+
   const counter = { val: 0 };
 
   // Show retry button after a short fixed delay — don't wait for the slow meter crawl
