@@ -13,6 +13,10 @@ const STATE = {
   variantStart: 0,
 };
 
+// Persistent meter counter — stored so stale tweens can be killed before a new run
+const METER = { val: 0 };
+let meterRetryCall = null; // delayed-call handle for the retry button
+
 const VARIANT_LABELS = ['Classic', 'Beating Heart', 'Unbreakable Heart'];
 
 // Cursor position (updated globally, used by Hearts variant)
@@ -174,6 +178,9 @@ function setupMatchmaker() {
     runTest(n1, n2);
   });
   document.getElementById('btn-retry').addEventListener('click', () => {
+    // Kill any still-running meter tween so its onUpdate can't overwrite our reset
+    gsap.killTweensOf(METER);
+    if (meterRetryCall) { meterRetryCall.kill(); meterRetryCall = null; }
     const ah = document.getElementById('ascii-heart');
     if (ah) { ah.style.display = 'none'; gsap.killTweensOf(document.getElementById('ascii-art')); }
     gsap.to('#btn-retry', { opacity:0, y:8, duration:0.2 });
@@ -231,23 +238,24 @@ function animateMeter(targetPct) {
   const heart = document.getElementById('meter-heart');
   const display = document.getElementById('pct-display');
 
-  // Reset here — result screen is fading in, so this is never visible
+  // Kill any stale tween on METER so previous onUpdate can't overwrite the reset
+  gsap.killTweensOf(METER);
+  if (meterRetryCall) { meterRetryCall.kill(); meterRetryCall = null; }
+
+  METER.val = 0;
   fill.style.width = '0%';
   heart.style.left = '-8px';
   display.textContent = '0%';
   gsap.set('#btn-retry', { opacity: 0, y: 8 });
 
-  const counter = { val: 0 };
-
-  // Show retry button after a short fixed delay — don't wait for the slow meter crawl
   if (targetPct !== 100) {
-    gsap.delayedCall(1.2, () => gsap.to('#btn-retry', { opacity:1, y:0, duration:0.1, ease:'power2.out' }));
+    meterRetryCall = gsap.delayedCall(1.2, () => gsap.to('#btn-retry', { opacity:1, y:0, duration:0.1, ease:'power2.out' }));
   }
 
-  gsap.to(counter, {
+  gsap.to(METER, {
     val: targetPct, duration: 3.8, ease: 'power4.out',
     onUpdate: () => {
-      const v = Math.round(counter.val);
+      const v = Math.round(METER.val);
       display.textContent = v + '%';
       fill.style.width = v + '%';
       heart.style.left = `calc(${v}% - 8px)`;
