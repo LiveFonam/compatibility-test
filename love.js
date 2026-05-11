@@ -701,7 +701,19 @@ function startSpinningHeart() {
     const hw = window.innerWidth / 2, hh = window.innerHeight / 2;
     const maxDist = Math.min(hw, hh) * 0.85;
     const cursorDist = CURSOR.x > -999 ? Math.hypot(CURSOR.x - hw, CURSOR.y - hh) : maxDist;
-    const proximity = Math.max(0, 1 - cursorDist / maxDist);
+    const cursorProximity = Math.max(0, 1 - cursorDist / maxDist);
+
+    // Sherry label proximity — if she's left inside the heart, BPM stays elevated
+    const sherryEl = document.getElementById('sherry-label');
+    let sherryProximity = 0;
+    if (sherryEl) {
+      const sr = sherryEl.getBoundingClientRect();
+      const sx = sr.left + sr.width / 2;
+      const sy = sr.top + sr.height / 2;
+      sherryProximity = Math.max(0, 1 - Math.hypot(sx - hw, sy - hh) / maxDist);
+    }
+
+    const proximity = Math.max(cursorProximity, sherryProximity);
 
     // Max speed 40% lower than before (was 6×, now 3.6×)
     const speedMult = 1 + proximity * 2.6;
