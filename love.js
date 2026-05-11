@@ -205,6 +205,11 @@ function runTest(name1, name2) {
     pct = hashNames(name1, name2);
   }
 
+  // Reset meter before transition so screen fades in already showing 0%
+  document.getElementById('meter-fill').style.width = '0%';
+  document.getElementById('meter-heart').style.left = '-8px';
+  document.getElementById('pct-display').textContent = '0%';
+
   document.getElementById('rn1').textContent = name1;
   document.getElementById('rn2').textContent = name2;
   transitionTo('screen-result', () => animateMeter(pct));
